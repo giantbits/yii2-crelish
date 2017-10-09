@@ -25,16 +25,16 @@
 
                     {{ pjax_begin({'id':'contentList', 'enablePushState': false}) }}
                     <div class="o-grid gc-bc--palette-clouds">
-    <div class="o-grid__cell o-grid__cell--width-20">
-        <h6>Type filter</h6>
-        <ul role="menu" class="gc-nav__content-filter">
-            {{ element_nav_widget({'ctype':ctype, 'selector':'cet'}) }}
-        </ul>
-    </div>
-    <div class="o-grid__cell">
-        <h6>Content</h6>
-        {{ grid_view_widget({'dataProvider': dataProvider, 'columns': columns, 'tableOptions': {'class':'table table-striped'}}) | raw }}
-    </div>
+                        <div class="o-grid__cell o-grid__cell--width-20">
+                            <h6>Type filter</h6>
+                            <ul role="menu" class="gc-nav__content-filter">
+                                {{ element_nav_widget({'ctype':ctype, 'selector':'cet'}) }}
+                            </ul>
+                        </div>
+                        <div class="o-grid__cell">
+                            <h6>Content</h6>
+                            {{ grid_view_widget({'dataProvider': dataProvider, 'columns': columns, 'tableOptions': {'class':'table table-striped'}}) | raw }}
+                        </div>
                     </div>
                     {{ pjax_end() }}
 
@@ -115,7 +115,7 @@
             var el = document.getElementById('sortable');
             if(el) {
                 var sortable = Sortable.create(el, {
-                    handle: '.glyphicon-move',
+                    handle: '.c-card__item--divider',
                     animation: 150,
                     onSort: function (evt) {
                         // same properties as onUpdate

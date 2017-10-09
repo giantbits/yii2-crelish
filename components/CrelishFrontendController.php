@@ -53,6 +53,8 @@ class CrelishFrontendController extends Controller
         // Force theming.
         $this->setViewPath('@app/themes/' . \giantbits\crelish\Module::getInstance()->theme . '/' . $this->id);
 
+        CrelishSnapshotManager::updateViewAndTheme($this);
+
         // Define entry point.
         $this->resolvePathRequested();
     }
@@ -106,18 +108,23 @@ class CrelishFrontendController extends Controller
                 $this->view->title = $data[Yii::$app->params['crelish']['pageTitleAttribute']];
             }
         }
+
         if (isset($data['metakeywords'])) {
             \Yii::$app->view->registerMetaTag([
                 'name' => 'keywords',
                 'content' => $data['metakeywords']
             ]);
         }
+
         if (isset($data['metadescription'])) {
             \Yii::$app->view->registerMetaTag([
                 'name' => 'description',
                 'content' => $data['metadescription']
             ]);
         }
+
+        // Expose params to layout file
+        \Yii::$app->view->params['slug'] = $data['slug'];
 
         return $this->render($this->viewTemplate, ['data' => $data]);
     }
@@ -161,9 +168,9 @@ class CrelishFrontendController extends Controller
 
 
         if (file_exists($path)) {
-            $this->layout = '@app/themes/' . \giantbits\crelish\Module::getInstance()->theme . "/layouts/" . $this->entryPoint['slug'] . '.twig';
+            $this->layout = \Yii::$app->view->theme->pathMap['@app/views'] . "/layouts/" . $this->entryPoint['slug'] . '.twig';
         } else {
-            $this->layout = '@app/themes/' . \giantbits\crelish\Module::getInstance()->theme . "/layouts/main.twig";
+            $this->layout = \Yii::$app->view->theme->pathMap['@app/views'] . "/layouts/main.twig";
         }
     }
 

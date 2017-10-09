@@ -34,6 +34,7 @@ class Bootstrap implements BootstrapInterface
                             ],
                             'functions' => array(
                                 't' => 'Yii::t',
+                                'urlForSlug'=>'giantbits\crelish\components\CrelishBaseUrlRule::urlForSlug',
                             )
                         ]
                     ]

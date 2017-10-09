@@ -109,7 +109,10 @@ class CrelishDynamicJsonModel extends \yii\base\DynamicModel
         }
 
         $outModel = Json::encode($modelArray);
-        $path = \Yii::getAlias('@app') . DIRECTORY_SEPARATOR . 'workspace' . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . $this->identifier;
+
+        $workspaceDir = 'workspace';
+        CrelishSnapshotManager::setWorkspaceDir($workspaceDir);
+        $path = \Yii::getAlias('@app/' . $workspaceDir . '/data') . DIRECTORY_SEPARATOR . $this->identifier;
         // Create folder if not present.
         FileHelper::createDirectory($path, 0775, true);
 
@@ -188,28 +191,30 @@ class CrelishDynamicJsonModel extends \yii\base\DynamicModel
         }
     }
 
-    private function updateCache($action, $data)
-    {
+    private function updateCache($action, $data) {
 
-        $cacheStore = \Yii::$app->cache->get('crc_' . $this->ctype);
+        $cacheKey = 'crc_' . $this->ctype;
+        CrelishSnapshotManager::setSnapshotCacheKey($cacheKey);
+
+        $cacheStore = \Yii::$app->cache->get($cacheKey);
 
         switch ($action) {
             case 'delete':
                 $data = $this->uuid;
-                Arrays::each($cacheStore, function ($cacheItem, $index) use ($data, $cacheStore) {
+                Arrays::each($cacheStore, function ($cacheItem, $index) use ($data, $cacheStore, $cacheKey) {
                     if (!empty($cacheItem['uuid']) && $cacheItem['uuid'] == $data) {
                         unset($cacheStore[$index]);
-                        \Yii::$app->cache->set('crc_' . $this->ctype, array_values($cacheStore));
+                        \Yii::$app->cache->set($cacheKey, array_values($cacheStore));
                     }
                 });
                 break;
             case 'update':
                 if (!$this->isNew) {
-                    Arrays::each($cacheStore, function ($cacheItem, $index) use ($data, $cacheStore) {
+                    Arrays::each($cacheStore, function ($cacheItem, $index) use ($data, $cacheStore, $cacheKey) {
                         if ($cacheItem['uuid'] == $data['uuid']) {
                             $data['ctype'] = $this->ctype;
                             $cacheStore[$index] = $data;
-                            \Yii::$app->cache->set('crc_' . $this->ctype, array_values($cacheStore));
+                            \Yii::$app->cache->set($cacheKey, array_values($cacheStore));
                         }
                     });
                 }
@@ -220,7 +225,7 @@ class CrelishDynamicJsonModel extends \yii\base\DynamicModel
                     $cacheStore = [];
                 }
                 array_push($cacheStore, $data);
-                \Yii::$app->cache->set('crc_' . $this->ctype, array_values($cacheStore));
+                \Yii::$app->cache->set($cacheKey, array_values($cacheStore));
         }
 
         if(is_a(\Yii::$app,'yii\web\Application')) {
@@ -265,7 +270,9 @@ class CrelishDynamicJsonModel extends \yii\base\DynamicModel
     private function loadModelData()
     {
         $this->isNew = false;
-        $this->fileSource = \Yii::getAlias('@app/workspace/data/') . DIRECTORY_SEPARATOR . $this->ctype . DIRECTORY_SEPARATOR . $this->uuid . '.json';
+        $workspaceDir = 'workspace';
+        CrelishSnapshotManager::setWorkspaceDir($workspaceDir);
+        $this->fileSource = \Yii::getAlias('@app/'. $workspaceDir .'/data/') . DIRECTORY_SEPARATOR . $this->ctype . DIRECTORY_SEPARATOR . $this->uuid . '.json';
         if(file_exists($this->fileSource)){
           $rawData = Json::decode(file_get_contents($this->fileSource));
         } else {
@@ -294,7 +301,9 @@ class CrelishDynamicJsonModel extends \yii\base\DynamicModel
 
     public static function loadElementDefinition($ctype)
     {
-        $definitionPath = \Yii::getAlias('@app/workspace/elements') . DIRECTORY_SEPARATOR . $ctype . '.json';
+        $workspaceDir = 'workspace';
+        CrelishSnapshotManager::setWorkspaceDir($workspaceDir);
+        $definitionPath = \Yii::getAlias('@app/' . $workspaceDir . '/elements') . DIRECTORY_SEPARATOR . $ctype . '.json';
         $elementDefinition = Json::decode(file_get_contents($definitionPath), false);
 
         // Add core fields.

@@ -1,0 +1,37 @@
+<div class="o-grid">
+    <div class="o-grid__cell">
+        <h6>{{ t('crelish', 'new Snapshot') }}</h6>
+        {% if error %}
+        {{ error }}
+        {% endif %}
+        {{ html.beginForm('', 'POST', {'id': 'snapshot-form'}) | raw }}
+        <table class="table table-striped">
+            <tbody>
+                <tr>
+                    <td>{{ html.textInput("name",null,{"class":"form-control","placeholder":"Name"}) | raw }}</td>
+                    <td>{{ html.submitButton(t('crelish', 'new Snapshot'),{"class":"c-button"}) | raw }}</a></td>
+                </tr>
+            </tbody>
+        </table>
+        {{ html.endForm() | raw }}
+    </div>
+</div>
+
+
+<div class="o-grid">
+    <div class="o-grid__cell">
+        <h6>{{ t('crelish', 'Snapshots') }}</h6>
+        <table class="table table-striped">
+            <tbody>
+            {% for snapshot in snapshots %}
+                <tr>
+                    <td>{{ snapshot.key }}</td>
+                    <td><a class="c-button" href="{{ ( '/' ~ snapshot.key ~ '/' ~ app.params['crelish']['entryPoint']['slug']) }}" target="_blank">{{ t('crelish', 'open') }}</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+

@@ -1,13 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: myrst
- * Date: 12.04.2017
- * Time: 21:52
- */
-
 namespace giantbits\crelish\components;
-
 
 use Underscore\Types\Arrays;
 use yii\base\Component;
@@ -33,7 +25,6 @@ class CrelishBaseContentProcessor extends Component
         $elementDefinition =  CrelishDynamicJsonModel::loadElementDefinition($ctype);
 
         if ($data) {
-
             foreach ($data as $key => $content) {
 
                 $fieldType = Arrays::find($elementDefinition->fields, function ($def) use ($key) {
@@ -85,13 +76,13 @@ class CrelishBaseContentProcessor extends Component
 
     public static function processFieldData($elementDefinition, $attr, $value, &$finalArr) {
         $fieldType = 'textInput';
+        $transform = NULL;
 
         // Get type of field.
         $field = Arrays::find($elementDefinition->fields, function ($value) use ($attr) {
             return $value->key == $attr;
         });
 
-        $transform = NULL;
         if (!empty($field) && is_object($field)) {
             $fieldType = (property_exists($field, 'type')) ? $field->type : 'textInput';
             $transform = (property_exists($field, 'transform')) ? $field->transform : null;

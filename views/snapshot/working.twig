@@ -1,0 +1,8 @@
+<div style="text-align:center">
+    <h2>{{ t('crelish','creating snapshot - please wait',{'name':name}) }}</h2>
+</div>
+<script>
+    window.setTimeout(function () {
+        document.location.href = '/crelish/snapshot/run';
+    },1000);
+</script>

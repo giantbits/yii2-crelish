@@ -19,11 +19,11 @@ class CrelishAsset extends AssetBundle
 {
     public $sourcePath = '@app/vendor/giantbits/yii2-crelish/assets';
     public $css = [
-        'https://cdn.jsdelivr.net/bootstrap/3.3.7/css/bootstrap.min.css',
-        'https://cdn.jsdelivr.net/fontawesome/4.7.0/css/font-awesome.min.css',
-        'https://cdn.jsdelivr.net/perfect-scrollbar/0.6.11/css/perfect-scrollbar.min.css',
-        'https://cdn.jsdelivr.net/blazecss/3.2.2/blaze.min.css',
-        'https://cdn.jsdelivr.net/dropzone/4.3.0/basic.min.css',
+        '//cdn.jsdelivr.net/bootstrap/3.3.7/css/bootstrap.min.css',
+        '//cdn.jsdelivr.net/fontawesome/4.7.0/css/font-awesome.min.css',
+        '//cdn.jsdelivr.net/perfect-scrollbar/0.6.11/css/perfect-scrollbar.min.css',
+        '//cdn.jsdelivr.net/blazecss/3.2.2/blaze.min.css',
+        '//cdn.jsdelivr.net/dropzone/4.3.0/basic.min.css',
         'css/crelish.css',
     ];
     public $js = [

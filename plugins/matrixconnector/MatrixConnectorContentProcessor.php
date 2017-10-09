@@ -31,15 +31,17 @@ class MatrixConnectorContentProcessor extends Component
                     if ($data && !empty($subContentdata['ctype']) && !empty($subContentdata['uuid'])) {
                         $fileSource = \Yii::getAlias('@app/workspace/data') . DIRECTORY_SEPARATOR . $subContentdata['ctype'] . DIRECTORY_SEPARATOR . $subContentdata['uuid'] . '.json';
                         $sourceData = Json::decode(file_get_contents($fileSource));
-
                     }
 
-                    $sourceDataOut = CrelishBaseContentProcessor::processContent($subContentdata['ctype'], $sourceData);
-                    if(!empty($processedData['uuid'])) {
-                        $sourceDataOut['parentUuid'] = $processedData['uuid'];
-                    }
+                    if(!empty($sourceData['state']) && $sourceData['state'] == 2) {
+                        $sourceDataOut = CrelishBaseContentProcessor::processContent($subContentdata['ctype'], $sourceData);
 
-                    $processedData[$key][$section] .= \Yii::$app->controller->renderPartial($subContentdata['ctype'] . '.twig', ['data' => $sourceDataOut]);
+                        if(!empty($processedData['uuid'])) {
+                            $sourceDataOut['parentUuid'] = $processedData['uuid'];
+                        }
+
+                        $processedData[$key][$section] .= \Yii::$app->controller->renderPartial($subContentdata['ctype'] . '.twig', ['data' => $sourceDataOut]);
+                    }
                 }
             }
         }

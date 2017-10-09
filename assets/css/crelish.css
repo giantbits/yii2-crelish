@@ -489,3 +489,12 @@ tr:hover td {
     background-color: #ddd !important;
     cursor: pointer;
 }
+
+.c-card__item .c-card__item--divider .glyphicon-move {
+    pointer-events: none;
+    cursor: move;
+}
+
+#sortable .c-card .c-card__item--divider {
+    cursor: move;
+}

@@ -13,6 +13,8 @@ use yii\web\UrlRuleInterface;
  *
  */
 class CrelishBaseUrlRule implements UrlRuleInterface {
+
+    var $snapshots = [];
     /**
      * [init description]
      * @return [type] [description]
@@ -56,8 +58,6 @@ class CrelishBaseUrlRule implements UrlRuleInterface {
         else {
             return $params['pathRequested'] . $paramsExposed;
         }
-
-
     }
 
     public function parseRequest($manager, $request) {
@@ -76,10 +76,23 @@ class CrelishBaseUrlRule implements UrlRuleInterface {
                 }
             }
         }
-
         if (empty($langFreePath )) {
-            header('Location: '.$this->urlForSlug(\Yii::$app->params['crelish']['entryPoint']['slug'],$langCode));
+            header('Location: '.CrelishBaseUrlRule::urlForSlug(\Yii::$app->params['crelish']['entryPoint']['slug'],$langCode).(strlen($_SERVER['QUERY_STRING']) > 0 ? "?".$_SERVER['QUERY_STRING'] : ''));
             die();
+        }
+
+        if (isset(\Yii::$app->params['crelish']['snapshotFile']) && \Yii::$app->user->isGuest === false) {
+            foreach (CrelishSnapshotManager::getSnapshots() as $key => $val) {
+                if (strtolower(substr($langFreePath,0,strlen($key)+1)) == strtolower($key) . '/') {
+                    $langFreePath = substr($langFreePath,strlen($key)+1);
+                    CrelishSnapshotManager::setCurrentSnapshot($key);
+                    break;
+                } else if (strtolower($langFreePath) == strtolower($key)) {
+                    CrelishSnapshotManager::setCurrentSnapshot($key);
+                    header('Location: '.CrelishBaseUrlRule::urlForSlug(\Yii::$app->params['crelish']['entryPoint']['slug'],$langCode).(strlen($_SERVER['QUERY_STRING']) > 0 ? "?".$_SERVER['QUERY_STRING'] : ''));
+                    die();
+                }
+            }
         }
 
         if($langFreePath  == 'crelish/' || $langFreePath  == 'crelish.html' || $langFreePath  == 'crelish') {
@@ -89,7 +102,12 @@ class CrelishBaseUrlRule implements UrlRuleInterface {
 
         if (strpos($langFreePath, '.html') === FALSE) {
             if (substr($langFreePath, -1) !== "/") {
-                header('Location: /' . $langFreePath . '.html');
+                $currentSnapshot = CrelishSnapshotManager::getCurrentSnapshot();
+                if ($currentSnapshot != null) {
+                    header('Location: /' . $currentSnapshot['key'] . '/' . $langFreePath . '.html'.(strlen($_SERVER['QUERY_STRING']) > 0 ? "?".$_SERVER['QUERY_STRING'] : ''));
+                } else {
+                    header('Location: /' . $langFreePath . '.html'.(strlen($_SERVER['QUERY_STRING']) > 0 ? "?".$_SERVER['QUERY_STRING'] : ''));
+                }
                 die();
             }
         } else {
@@ -118,8 +136,15 @@ class CrelishBaseUrlRule implements UrlRuleInterface {
         return ['crelish/frontend/run', $params];
     }
 
-    public function urlForSlug($slug,$langCode=null) {
+    public static function urlForSlug($slug,$langCode=null) {
         $url = '/' . $slug . '.html';
+        if (isset(\Yii::$app->params['crelish']['snapshotFile'])) {
+            $snapshot = CrelishSnapshotManager::getCurrentSnapshot();
+            if ($snapshot != null) {
+                $url = '/' . $snapshot['key'] . $url;
+            }
+        }
+
         if (isset(\Yii::$app->params['crelish']['langprefix']) && \Yii::$app->params['crelish']['langprefix']) {
             if (empty($langCode)) {
                 $langCode = \Yii::$app->language;

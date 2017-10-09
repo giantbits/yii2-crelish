@@ -13,6 +13,14 @@
         </ul>
     </span>
 </span>
+
+{% if (app.params["crelish"]["snapshotFile"]) %}
+    <span class="c-nav__item c-nav__item--right {{ app.controller.id == 'snapshot' ? 'active' : '' }}">
+  <a href="{{ url('crelish/snapshot/index') }}">
+    <span class="fa fa-camera"></span> {{ t('crelish', 'Snapshot') }}
+  </a>
+</span>
+{% endif %}
 <!-- still work in progress...
 <span class="c-nav__item c-nav__item--right {{ app.controller.id == 'elements' ? 'active' : '' }}">
   <a href="{{ url('crelish/elements/index') }}">
